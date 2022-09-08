@@ -1,0 +1,29 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:4.2
+    command: mongod --replSet pbm-exporter-test
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - pbm-exporter-test
+  
+  pbm-agent:
+    image: percona/percona-backup-mongodb:1.8.1
+    user: root
+    environment:
+      PBM_MONGODB_URI: mongodb://mongo:27017
+    volumes:
+      - pbm-data:/data/backups
+      - ./pbm-config.yaml:/tmp/pbm-config.yaml
+    networks:
+      - pbm-exporter-test
+  
+volumes:
+  mongo-data:
+  pbm-data:
+
+networks:
+  pbm-exporter-test:
+    name: pbm-exporter-test
+    external: true

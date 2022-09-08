@@ -1,0 +1,50 @@
+{
+  "name": "pbm-exporter",
+  "version": "0.0.0",
+  "description": "Prometheus exporter for PBM (Percona Backup Mongodb)",
+  "main": "server/index.js",
+  "scripts": {
+    "lint": "eslint --ext .js --ignore-path .gitignore ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koumoul-dev/pbm-exporter.git"
+  },
+  "keywords": [
+    "PBM",
+    "Percona",
+    "Backup",
+    "Mongodb",
+    "Prometheus",
+    "exporter",
+    "monitoring",
+    "mongodb"
+  ],
+  "author": "alban.mouton@gmail.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/koumoul-dev/pbm-exporter/issues"
+  },
+  "homepage": "https://github.com/koumoul-dev/pbm-exporter#readme",
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "standard"
+    ]
+  },
+  "dependencies": {
+    "config": "^3.3.7",
+    "event-to-promise": "^0.8.0",
+    "express": "^4.18.1",
+    "prom-client": "^14.1.0"
+  },
+  "devDependencies": {
+    "clean-modules": "^2.0.6",
+    "eslint": "^8.23.0",
+    "eslint-config-standard": "^17.0.0"
+  }
+}
