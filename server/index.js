@@ -41,7 +41,7 @@ const pbmNodesTotalGauge = new client.Gauge({
 const pbmNodesGauge = new client.Gauge({
   name: 'pbm_nodes',
   help: 'Detail of nodes with statuses',
-  labelNames: ['host', 'status']
+  labelNames: ['rs', 'host', 'status']
 })
 const pbmPITRTotalGauge = new client.Gauge({
   name: 'pbm_pitr_chunks_total',
@@ -84,14 +84,18 @@ const updateStatus = async () => {
 
   for (const nodeStatus of ['ok', 'error']) {
     pbmNodesTotalGauge.labels(nodeStatus).set(0)
-    for (const node of status.cluster[0].nodes) {
-      pbmNodesGauge.labels(node.host, nodeStatus).set(0)
+    for (const rs of status.cluster) {
+      for (const node of rs.nodes) {
+        pbmNodesGauge.labels(rs.rs, node.host, nodeStatus).set(0)
+      }
     }
   }
-  for (const node of status.cluster[0].nodes) {
-    const nodeStatus = node.ok ? 'ok' : 'error'
-    pbmNodesTotalGauge.labels(nodeStatus).inc(1)
-    pbmNodesGauge.labels(node.host, nodeStatus).set(1)
+  for (const rs of status.cluster) {
+    for (const node of rs.nodes) {
+      const nodeStatus = node.ok ? 'ok' : 'error'
+      pbmNodesTotalGauge.labels(nodeStatus).inc(1)
+      pbmNodesGauge.labels(rs.rs, node.host, nodeStatus).set(1)
+    }
   }
 
   pbmPITRTotalGauge.set(status.backups.pitrChunks.pitrChunks.length)
