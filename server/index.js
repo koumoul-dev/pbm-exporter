@@ -98,13 +98,14 @@ const updateStatus = async () => {
     }
   }
 
-  pbmPITRTotalGauge.set(status.backups.pitrChunks.pitrChunks.length)
-  const lastPITRChunk = status.backups.pitrChunks.pitrChunks[0]
-  if (lastPITRChunk) {
-    pbmLastPITRSinceGauge.set(Math.round((new Date().getTime() / 1000) - lastPITRChunk.range.end))
+  if (status.backups.pitrChunks.pitrChunks) {
+    pbmPITRTotalGauge.set(status.backups.pitrChunks.pitrChunks.length)
+    const lastPITRChunk = status.backups.pitrChunks.pitrChunks[0]
+    if (lastPITRChunk) {
+      pbmLastPITRSinceGauge.set(Math.round((new Date().getTime() / 1000) - lastPITRChunk.range.end))
+    }
   }
-
-  pbmPITRErrorGauge.set(status.pitr.error ? 1 : 0)
+  pbmPITRErrorGauge.set(status.pitr && status.pitr.error ? 1 : 0)
   return status
 }
 
