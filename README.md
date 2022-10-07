@@ -28,6 +28,13 @@ docker-compose exec pbm-agent bash
 >> pbm config --set=pitr.enabled=true
 ```
 
+Test the source code:
+
+```
+npm run dev
+curl http://localhost:9090/metrics
+```
+
 Build and test the image:
 
 ```

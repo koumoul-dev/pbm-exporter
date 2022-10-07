@@ -1,0 +1,5 @@
+{
+  "verbose": false,
+  "ext": "js",
+  "watch": ["server/", "config/", "package.json"]
+}

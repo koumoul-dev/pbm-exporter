@@ -1,6 +1,6 @@
 ######################################
 # Stage: nodejs dependencies and build
-FROM registry.access.redhat.com/ubi8/nodejs-16 AS builder
+FROM node:16.13.2-alpine3.14 AS builder
 
 USER root
 
@@ -26,12 +26,13 @@ RUN npm prune --production && \
 ####################################
 # Exporter using "pbm" executable from official pbm image
 
-FROM registry.access.redhat.com/ubi8/nodejs-16-minimal
+FROM node:16.13.2-alpine3.14
+
+RUN apk add --no-cache unzip dumb-init
 
 WORKDIR /webapp
 
 COPY --from=builder /webapp/node_modules /webapp/node_modules
-COPY --from=percona/percona-backup-mongodb:1.8.1 /usr/bin/pbm /usr/bin/pbm-agent /usr/bin/pbm-speed-test /usr/bin/
 
 ADD server server
 ADD config config
@@ -43,4 +44,4 @@ ENV NODE_ENV production
 
 EXPOSE 8080
 
-CMD ["node", "server"]
+CMD ["dumb-init", "node", "server"]
