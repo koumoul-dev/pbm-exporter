@@ -1,6 +1,6 @@
 {
   "name": "pbm-exporter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Prometheus exporter for PBM (Percona Backup Mongodb)",
   "main": "server/index.js",
   "scripts": {
