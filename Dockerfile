@@ -1,6 +1,6 @@
 ######################################
 # Stage: nodejs dependencies and build
-FROM node:16.13.2-alpine3.14 AS builder
+FROM node:16.20.2-alpine3.18 AS builder
 
 USER root
 
@@ -26,7 +26,7 @@ RUN npm prune --production && \
 ####################################
 # Exporter using "pbm" executable from official pbm image
 
-FROM node:16.13.2-alpine3.14
+FROM node:16.20.2-alpine3.18
 
 RUN apk add --no-cache unzip dumb-init
 

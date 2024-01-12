@@ -28,17 +28,9 @@ docker-compose exec pbm-agent bash
 >> pbm config --set=pitr.enabled=true
 ```
 
-Test the source code:
-
-```
-npm run dev
-curl http://localhost:9090/metrics
-```
-
 Build and test the image:
 
 ```
-docker build . -t pbm-exporter
-docker run -it --rm -p 9090:9090 -e PBM_MONGODB_URI=mongodb://mongo:27017 --network pbm-exporter-test --name pbm-exporter-test pbm-exporter
+docker build . -t pbm-exporter && docker run -it --rm -p 9090:9090 -e DEBUG=pbm-exporter -e PBM_MONGODB_URI=mongodb://mongo:27017 --network pbm-exporter-test --name pbm-exporter-test pbm-exporter
 curl http://localhost:9090/metrics
 ```
