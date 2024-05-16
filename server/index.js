@@ -126,7 +126,7 @@ const updateStatus = async () => {
       let lock = await db.collection('pbmLock').findOne({ type: 'pitr' })
       debug('PITR lock', lock)
       if (!lock) {
-        lock = await db.collection('pbmOpLock').findOne({ type: 'pitr' })
+        lock = await db.collection('pbmLockOp').findOne({ type: 'pitr' })
         debug('PITR OP lock', lock)
       }
 
