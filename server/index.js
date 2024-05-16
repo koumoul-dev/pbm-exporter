@@ -123,8 +123,13 @@ const updateStatus = async () => {
 
     debug('PITR enabled', pbmConfig.pitr?.enabled)
     if (pbmConfig.pitr?.enabled) {
-      const lock = await db.collection('pbmLock').findOne({ type: 'pitr' })
+      let lock = await db.collection('pbmLock').findOne({ type: 'pitr' })
       debug('PITR lock', lock)
+      if (!lock) {
+        lock = await db.collection('pbmLockOp').findOne({ type: 'pitr' })
+        debug('PITR OP lock', lock)
+      }
+
       const now = Math.round(new Date().getTime() / 1000)
       const pitrStale = !lock || (lock.hb.high + 30) < now
       debug('PITR stale', pitrStale, lock && (now - lock.hb.high))
