@@ -67,6 +67,12 @@ yarn-error.log*
 *.tgz
 *.tar.bz2
 
+# Local development and PR preparation files
+COMMIT_MESSAGE.md
+PR_TEMPLATE.md
+prepare-pr.sh
+setup-fork.sh
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
