@@ -1,47 +1,53 @@
-######################################
-# Stage: nodejs dependencies and build
-FROM node:16.20.2-alpine3.18 AS builder
+# Build stage
+FROM golang:1.21-alpine AS builder
 
-USER root
+# Install dependencies for building
+RUN apk add --no-cache git make
 
-WORKDIR /webapp
-ADD package.json .
-ADD package-lock.json .
-# use clean-modules on the same line as npm ci to be lighter in the cache
-RUN npm ci && \
-    ./node_modules/.bin/clean-modules --yes --exclude "**/*.mustache" --exclude "eslint-config-standard/.eslintrc.json"
+# Set working directory
+WORKDIR /app
 
-# Adding server files
-ADD server server
-ADD config config
+# Copy go mod files
+COPY go.mod go.sum ./
 
-# Check quality
-ADD .gitignore .gitignore
-RUN npm run lint
+# Download dependencies
+RUN go mod download
 
-# Cleanup /webapp/node_modules so it can be copied by next stage
-RUN npm prune --production && \
-    rm -rf node_modules/.cache
+# Copy source code
+COPY . .
 
-####################################
-# Exporter using "pbm" executable from official pbm image
+# Build the binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags "-s -w" \
+    -o pbm-exporter .
 
-FROM node:16.20.2-alpine3.18
+# Final stage
+FROM alpine:latest
 
-RUN apk add --no-cache unzip dumb-init
+# Install ca-certificates for HTTPS calls
+RUN apk --no-cache add ca-certificates tzdata
 
-WORKDIR /webapp
+# Create a non-root user
+RUN addgroup -g 1001 -S pbm && \
+    adduser -u 1001 -S pbm -G pbm
 
-COPY --from=builder /webapp/node_modules /webapp/node_modules
+WORKDIR /app
 
-ADD server server
-ADD config config
-ADD package.json .
-ADD README.md BUILD.json* ./
-ADD LICENSE .
+# Copy the binary from builder stage
+COPY --from=builder /app/pbm-exporter .
 
-ENV NODE_ENV production
+# Change ownership to non-root user
+RUN chown pbm:pbm /app/pbm-exporter
 
-EXPOSE 8080
+# Switch to non-root user
+USER pbm
 
-CMD ["dumb-init", "node", "server"]
+# Expose port
+EXPOSE 9090
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:9090/metrics || exit 1
+
+# Run the binary
+CMD ["./pbm-exporter"]

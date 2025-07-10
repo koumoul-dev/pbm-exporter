@@ -1,10 +1,77 @@
-# Logs
-logs
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+pbm-exporter
+pbm-exporter-*
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+
+# Build directory
+build/
+dist/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Log files
 *.log
+
+# Coverage reports
+coverage.txt
+coverage.html
+
+# Temporary files
+tmp/
+temp/
+
+# Node.js files (legacy)
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
+
+# Archives
+*.zip
+*.tar.gz
+*.tgz
+*.tar.bz2
+
+# Local development and PR preparation files
+COMMIT_MESSAGE.md
+PR_TEMPLATE.md
+prepare-pr.sh
+setup-fork.sh
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

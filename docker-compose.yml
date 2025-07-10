@@ -21,6 +21,18 @@ services:
     networks:
       - pbm-exporter-test
   
+  pbm-exporter:
+    build: .
+    environment:
+      PBM_MONGODB_URI: mongodb://mongo:27017
+      PORT: 9090
+    ports:
+      - "9090:9090"
+    depends_on:
+      - mongo
+    networks:
+      - pbm-exporter-test
+
 volumes:
   mongo-data:
   pbm-data:
