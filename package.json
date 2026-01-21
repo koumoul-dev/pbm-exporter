@@ -2,10 +2,14 @@
   "name": "pbm-exporter",
   "version": "0.1.2",
   "description": "Prometheus exporter for PBM (Percona Backup Mongodb)",
-  "main": "server/index.js",
+  "type": "module",
   "scripts": {
-    "lint": "eslint --ext .js --ignore-path .gitignore .",
-    "dev": "DEBUG=pbm-exporter PBM_MONGODB_URI=mongodb://localhost:27017 nodemon server/index.js"
+    "dev": "DEBUG=pbm-exporter PBM_MONGODB_URI=mongodb://localhost:27017 node --watch server/index.ts",
+    "lint": "eslint .",
+    "check-types": "tsc",
+    "prepare": "husky || true",
+    "test": "NODE_ENV=test ENABLE_VULN_ID=true node --disable-warning=ExperimentalWarning --test-force-exit --test-concurrency=1 --test test/*.ts",
+    "quality": "npm run lint && npm run check-types && npm run test && npm audit --omit=dev --audit-level=critical"
   },
   "repository": {
     "type": "git",
@@ -22,33 +26,24 @@
     "mongodb"
   ],
   "author": "alban.mouton@gmail.com",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/koumoul-dev/pbm-exporter/issues"
   },
   "homepage": "https://github.com/koumoul-dev/pbm-exporter#readme",
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "eslint:recommended",
-      "standard"
-    ]
+  "devDependencies": {
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
+    "@types/debug": "^4.1.12",
+    "@types/node": "^24.10.9",
+    "eslint": "^9.39.2",
+    "husky": "^9.1.7",
+    "neostandard": "^0.12.2",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "config": "^3.3.7",
-    "debug": "^4.3.4",
-    "event-to-promise": "^0.8.0",
-    "express": "^4.18.1",
-    "mongodb": "^4.10.0",
-    "prom-client": "^14.1.0"
-  },
-  "devDependencies": {
-    "clean-modules": "^2.0.6",
-    "eslint": "^8.23.0",
-    "eslint-config-standard": "^17.0.0",
-    "nodemon": "^2.0.20"
+    "debug": "^4.4.3",
+    "mongodb": "^7.0.0",
+    "prom-client": "^15.1.3"
   }
 }

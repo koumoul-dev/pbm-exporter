@@ -14,7 +14,7 @@ docker-compose up -d
 PBM requires mongodb to run in replicaset mode:
 
 ```
-docker-compose exec mongo mongo
+docker compose exec mongo mongo
 >> rs.initiate({_id: 'pbm-exporter-test', members: [{_id: 0, host: 'mongo:27017'}]})
 >> db.test.insert({'test': 'Test !!'})
 ```
@@ -22,7 +22,7 @@ docker-compose exec mongo mongo
 Configure PBM and prepare first backup:
 
 ```
-docker-compose exec pbm-agent bash
+docker compose exec pbm-agent bash
 >> pbm config --file=/tmp/pbm-config.yaml
 >> pbm backup
 >> pbm config --set=pitr.enabled=true

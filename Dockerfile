@@ -1,47 +1,35 @@
+##########################
+FROM node:24.13.0-alpine3.23 AS base
+
+WORKDIR /webapp
+ENV NODE_ENV=production
+
+##########################
+FROM base AS package-strip
+
+RUN apk add --no-cache jq moreutils
+ADD package.json package-lock.json ./
+# remove version from manifest for better caching when building a release
+RUN jq '.version="build"' package.json | sponge package.json
+RUN jq '.version="build"' package-lock.json | sponge package-lock.json
+
+##########################
+FROM base AS installer
+
+RUN apk add --no-cache python3 make g++ git jq moreutils
+RUN npm i -g clean-modules@3.1.1
+COPY --from=package-strip /webapp/package.json package.json
+COPY --from=package-strip /webapp/package-lock.json package-lock.json
+RUN npm ci --omit=dev --omit=optional --no-audit --no-fund && npx clean-modules --yes
+
 ######################################
-# Stage: nodejs dependencies and build
-FROM node:16.20.2-alpine3.18 AS builder
+FROM base AS main
 
-USER root
+COPY --from=installer /webapp/node_modules node_modules
+ADD /server server
+ADD package.json README.md LICENSE BUILD.json* ./
 
-WORKDIR /webapp
-ADD package.json .
-ADD package-lock.json .
-# use clean-modules on the same line as npm ci to be lighter in the cache
-RUN npm ci && \
-    ./node_modules/.bin/clean-modules --yes --exclude "**/*.mustache" --exclude "eslint-config-standard/.eslintrc.json"
+USER node
+EXPOSE 9090
 
-# Adding server files
-ADD server server
-ADD config config
-
-# Check quality
-ADD .gitignore .gitignore
-RUN npm run lint
-
-# Cleanup /webapp/node_modules so it can be copied by next stage
-RUN npm prune --production && \
-    rm -rf node_modules/.cache
-
-####################################
-# Exporter using "pbm" executable from official pbm image
-
-FROM node:16.20.2-alpine3.18
-
-RUN apk add --no-cache unzip dumb-init
-
-WORKDIR /webapp
-
-COPY --from=builder /webapp/node_modules /webapp/node_modules
-
-ADD server server
-ADD config config
-ADD package.json .
-ADD README.md BUILD.json* ./
-ADD LICENSE .
-
-ENV NODE_ENV production
-
-EXPOSE 8080
-
-CMD ["dumb-init", "node", "server"]
+CMD ["node", "server/index.ts"]
